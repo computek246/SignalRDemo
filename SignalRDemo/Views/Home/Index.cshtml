@@ -1,0 +1,42 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+
+@{
+  ViewData["Title"] = "Home Page";
+}
+
+
+
+<style type="text/css">
+  .messageList {
+  }
+</style>
+
+
+<div class="container">
+  <div class="row">
+    <input type="button" id="addAction01" value="Add Action #1" />
+    &nbsp;
+    <input type="button" id="addAction02" value="Add Action #2" />
+    &nbsp;
+    <input type="button" id="addAction03" value="Add Action #3" />
+  </div>
+</div>
+
+<br />
+
+<div class="text-center">
+  <h1 class="display-4">Welcome @User.Identity.Name</h1>
+  @{
+    if (SignInManager.IsSignedIn(User))
+    {
+      @Html.Hidden("UserId", UserManager.GetUserId(User))
+
+      <p>User Id: @UserManager.GetUserId(User)</p>
+
+      <ul class="messageList"></ul>
+    }
+  }
+</div>

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31005.135
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalRDemo", "SignalRDemo\SignalRDemo.csproj", "{C0AA355B-8304-4B30-B6B3-9B29ECBB519A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notification.DAL", "Notification.DAL\Notification.DAL.csproj", "{D33B4405-3C54-47C3-80A1-5ACC00A59102}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C0AA355B-8304-4B30-B6B3-9B29ECBB519A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0AA355B-8304-4B30-B6B3-9B29ECBB519A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0AA355B-8304-4B30-B6B3-9B29ECBB519A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0AA355B-8304-4B30-B6B3-9B29ECBB519A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D33B4405-3C54-47C3-80A1-5ACC00A59102}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D33B4405-3C54-47C3-80A1-5ACC00A59102}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D33B4405-3C54-47C3-80A1-5ACC00A59102}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D33B4405-3C54-47C3-80A1-5ACC00A59102}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AB611AB4-D65C-4C87-980B-9F7F6DA37DAB}
+	EndGlobalSection
+EndGlobal
