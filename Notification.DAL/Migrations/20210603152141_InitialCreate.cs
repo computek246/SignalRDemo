@@ -7,6 +7,31 @@ namespace Notification.DAL.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+
+            //migrationBuilder.EnsureSchema(
+            //    name: "security");
+
+            //migrationBuilder.CreateTable(
+            //    name: "Users",
+            //    schema: "security",
+            //    columns: table => new
+            //    {
+            //        Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+            //        FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+            //        LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+            //        ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
+            //    },
+            //    constraints: table =>
+            //    {
+            //        table.PrimaryKey("PK_Users", x => x.Id);
+            //    });
+
+
+
+
+
+
+
             migrationBuilder.EnsureSchema(
                 name: "notification");
 
@@ -17,10 +42,8 @@ namespace Notification.DAL.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TemplateEn = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TemplateAr = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    HeaderEn = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    HeaderAr = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Header = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -35,8 +58,7 @@ namespace Notification.DAL.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TemplateId = table.Column<int>(type: "int", nullable: false),
-                    EventNameEn = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EventNameAr = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EventName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreationDate = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "(getdate())")
                 },
                 constraints: table =>
@@ -111,9 +133,9 @@ namespace Notification.DAL.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     NotificationId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    IsRead = table.Column<bool>(type: "bit", nullable: true, defaultValueSql: "((0))"),
+                    IsRead = table.Column<bool>(type: "bit", nullable: false),
                     ReadDate = table.Column<DateTime>(type: "datetime", nullable: true),
-                    IsDelete = table.Column<bool>(type: "bit", nullable: true, defaultValueSql: "((0))"),
+                    IsDelete = table.Column<bool>(type: "bit", nullable: false),
                     DeleteDate = table.Column<DateTime>(type: "datetime", nullable: true)
                 },
                 constraints: table =>
@@ -174,6 +196,10 @@ namespace Notification.DAL.Migrations
             migrationBuilder.DropTable(
                 name: "UserNotifications",
                 schema: "notification");
+
+            migrationBuilder.DropTable(
+                name: "Users",
+                schema: "security");
 
             migrationBuilder.DropTable(
                 name: "Notifications",

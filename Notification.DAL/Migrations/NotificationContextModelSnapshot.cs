@@ -56,10 +56,7 @@ namespace Notification.DAL.Migrations
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
-                    b.Property<string>("EventNameAr")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EventNameEn")
+                    b.Property<string>("EventName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -123,17 +120,11 @@ namespace Notification.DAL.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("HeaderAr")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("HeaderEn")
+                    b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TemplateAr")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TemplateEn")
+                    b.Property<string>("Header")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -152,15 +143,11 @@ namespace Notification.DAL.Migrations
                     b.Property<DateTime?>("DeleteDate")
                         .HasColumnType("datetime");
 
-                    b.Property<bool?>("IsDelete")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValueSql("((0))");
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
 
-                    b.Property<bool?>("IsRead")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValueSql("((0))");
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
 
                     b.Property<int>("NotificationId")
                         .HasColumnType("int");
@@ -178,6 +165,25 @@ namespace Notification.DAL.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserNotifications", "notification");
+                });
+
+            modelBuilder.Entity("Notification.DAL.Models.Users", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users", "security");
                 });
 
             modelBuilder.Entity("Notification.DAL.Models.EventRecipient", b =>

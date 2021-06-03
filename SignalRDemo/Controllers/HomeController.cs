@@ -48,10 +48,10 @@ namespace SignalRDemo.Controllers
 
         public async Task SaveDate(string userId, int eventId, string url)
         {
-            await _notificationService.SaveNotification(eventId: eventId, url: url, new UserViewModel { Id = userId, FirstName = User.Identity.Name.Split("@").FirstOrDefault(), LastName = "" });
+            await _notificationService.SaveNotification(eventId, url, new UserViewModel { Id = userId, FirstName = User.Identity.Name.Split("@").FirstOrDefault(), LastName = "" });
         }
 
-        public async Task ReadStatus(string notificationId, string userId)
+        public async Task ReadStatus(int notificationId, string userId)
         {
             await _notificationService.ReadStatus(notificationId, userId);
         }

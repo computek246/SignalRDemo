@@ -12,9 +12,9 @@ namespace Notification.DAL.Models
         public int Id { get; set; }
         public int NotificationId { get; set; }
         public string UserId { get; set; }
-        public bool? IsRead { get; set; }
+        public bool IsRead { get; set; }
         public DateTime? ReadDate { get; set; }
-        public bool? IsDelete { get; set; }
+        public bool IsDelete { get; set; }
         public DateTime? DeleteDate { get; set; }
 
         public virtual Notifications Notification { get; set; }

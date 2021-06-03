@@ -15,10 +15,8 @@ namespace Notification.DAL.Models
         }
 
         public int Id { get; set; }
-        public string TemplateEn { get; set; }
-        public string TemplateAr { get; set; }
-        public string HeaderEn { get; set; }
-        public string HeaderAr { get; set; }
+        public string Content { get; set; }
+        public string Header { get; set; }
 
         public virtual ICollection<Events> Events { get; set; }
     }

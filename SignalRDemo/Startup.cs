@@ -23,7 +23,7 @@ namespace SignalRDemo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            // -------------  SignalR  ---------------
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
             services.AddNotification(connectionString);
             services.AddSignalR(e =>
@@ -32,9 +32,16 @@ namespace SignalRDemo
                 e.MaximumReceiveMessageSize = int.MaxValue;
             });
 
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            // -------------  SignalR  ---------------
+
+
+            // --------------  Identity --------------
+            services.AddDbContext<ApplicationDbContext>(options => { options.UseSqlServer(connectionString); });
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+                    options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddTokenProvider<DataProtectorTokenProvider<ApplicationUser>>(TokenOptions.DefaultProvider);
+            services.AddScoped<SignInManager<ApplicationUser>, SignInManager<ApplicationUser>>();
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -47,7 +54,7 @@ namespace SignalRDemo
                 options.Password.RequiredUniqueChars = 1;
             });
 
-
+            // --------------  Identity --------------
 
             services.AddControllersWithViews();
             services.AddRazorPages();

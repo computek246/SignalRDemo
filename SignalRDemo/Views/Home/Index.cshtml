@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@inject SignInManager<IdentityUser> SignInManager
-@inject UserManager<IdentityUser> UserManager
+@using SignalRDemo.Data
+@inject SignInManager<ApplicationUser> _signInManager
+@inject UserManager<ApplicationUser> _userManager
 
 
 @{
@@ -11,6 +12,11 @@
 
 <style type="text/css">
   .messageList {
+  }
+
+  .temp { }
+  a.float-left {
+    border: black;
   }
 </style>
 
@@ -28,15 +34,33 @@
 <br />
 
 <div class="text-center">
-  <h1 class="display-4">Welcome @User.Identity.Name</h1>
   @{
-    if (SignInManager.IsSignedIn(User))
+    if (_signInManager.IsSignedIn(User))
     {
-      @Html.Hidden("UserId", UserManager.GetUserId(User))
+      <p>
+        Welcome:
+        @if (User.Identity != null)
+        {
+          @User.Identity.Name
+        }
+      </p>
 
-      <p>User Id: @UserManager.GetUserId(User)</p>
+      @Html.Hidden("UserId", _userManager.GetUserId(User))
 
-      <ul class="messageList"></ul>
+      <p>User Id: @_userManager.GetUserId(User)</p>
+
+      <ul class="messageList">
+
+        <li>
+          <div class="temp"></div>
+          <a href="https://localhost:44354/" class="float-left" data-notification-id="53">
+            <div>
+              <div>Application has been approved by "user1" at Thursday, June 3, 2021 1:58:10 PM</div>
+            </div>
+          </a>
+        </li>
+
+      </ul>
     }
   }
 </div>

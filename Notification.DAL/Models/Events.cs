@@ -17,8 +17,7 @@ namespace Notification.DAL.Models
 
         public int Id { get; set; }
         public int TemplateId { get; set; }
-        public string EventNameEn { get; set; }
-        public string EventNameAr { get; set; }
+        public string EventName { get; set; }
         public DateTime CreationDate { get; set; }
 
         public virtual Templates Template { get; set; }

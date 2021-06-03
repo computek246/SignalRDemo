@@ -10,6 +10,6 @@ namespace Notification.DAL.Services
         Task SendToUser();
         Task SaveNotification(int eventId, string url, UserViewModel user);
         Task PushUserNotification(UserViewModel userViewModel);
-        Task ReadStatus(string notificationId, string userId);
+        Task ReadStatus(int notificationId, string userId);
     }
 }

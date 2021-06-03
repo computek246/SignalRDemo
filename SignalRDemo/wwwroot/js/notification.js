@@ -6,29 +6,42 @@ var connection = new signalR.HubConnectionBuilder()
 
 
 connection.on("ReceiveMessage", function (data) {
-  console.log(data);
   $(".messageList").append(data);
 });
 
 
 
 connection.on("PushUserNotification", function (data) {
-  console.log(data);
 
   alert("you have (" + data.unreadCount + ") Unreaded Message");
-  $.each(data.notificationList, function (i, obj) {
-    $(".messageList").append(obj.notificationContent);
-  })
+  $(".messageList").html("");
+  $.each(data.notificationList,
+    function (i, obj) {
+
+      $(".messageList").append(obj.notificationContent);
+
+
+    });
+
+  $("a.float-left").css('color', 'blue');
 
 });
 
 
 connection.start().then(function () {
   console.log("signalR is Started");
+
+  $.ajax({
+    url: "/Home/GetUserNotifications",
+    success: function (e) { }
+  });
+
 }).catch(function (err) {
   return console.error(err.toString());
 });
 
+//=============================================
+// walid wrdany: for test
 
 $("#addAction01").on("click", function (e) {
   BackToServer(1);
@@ -44,11 +57,8 @@ $("#addAction03").on("click", function (e) {
 
 
 $(function () {
-  $.ajax({
-    url: "/Home/GetUserNotifications",
-    success: function (e) { }
-  });
-})
+  //
+});
 
 function BackToServer(eventId) {
   var pathname = window.location.pathname; // Returns path only (/path/example.html)
@@ -58,16 +68,31 @@ function BackToServer(eventId) {
 
   $.ajax({
     url: "/Home/SaveDate",
-    data: { userId: $("#UserId").val(), eventId: eventId, url: url },
+    data: {
+      userId: $("#UserId").val(),
+      eventId: eventId, url: url
+    },
     success: function (e) { }
   });
 }
 
+//=============================================
 
-function ReadStatus(notificationId) {
+
+
+
+$(document).on("click", "a.float-left", function (e) {
+
+  e.preventDefault();
+  var _url = $(e.target).attr("href");
   $.ajax({
     url: "/Home/ReadStatus",
-    data: { notificationId: notificationId, userId: $("#UserId").val() },
-    success: function (e) { }
+    data: {
+      notificationId: $(this).attr("data-notification-id"),
+      userId: $("#UserId").val()
+    },
+    success: function (e) {
+      //window.location.href = _url
+    }
   });
-}
+});

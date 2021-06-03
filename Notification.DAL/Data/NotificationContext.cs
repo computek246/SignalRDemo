@@ -20,11 +20,18 @@ namespace Notification.DAL.Data
         {
         }
 
-        public virtual DbSet<EventRecipient> EventRecipient { get; set; }
-        public virtual DbSet<Events> Events { get; set; }
-        public virtual DbSet<Notifications> Notifications { get; set; }
-        public virtual DbSet<Templates> Templates { get; set; }
-        public virtual DbSet<UserNotifications> UserNotifications { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual DbSet<Users> Users { get; set; }
+
+
+        public DbSet<EventRecipient> EventRecipient { get; set; }
+        public DbSet<Events> Events { get; set; }
+        public DbSet<Notifications> Notifications { get; set; }
+        public DbSet<Templates> Templates { get; set; }
+        public DbSet<UserNotifications> UserNotifications { get; set; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -33,6 +40,11 @@ namespace Notification.DAL.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Users>(entity =>
+            {
+                entity.ToTable("Users", "security");
+            });
+
             modelBuilder.Entity<EventRecipient>(entity =>
             {
                 entity.ToTable("EventRecipient", "notification");
@@ -60,7 +72,7 @@ namespace Notification.DAL.Data
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.EventNameEn).IsRequired();
+                entity.Property(e => e.EventName).IsRequired();
 
                 entity.HasOne(d => d.Template)
                     .WithMany(p => p.Events)
@@ -96,9 +108,9 @@ namespace Notification.DAL.Data
             {
                 entity.ToTable("Templates", "notification");
 
-                entity.Property(e => e.HeaderEn).IsRequired();
+                entity.Property(e => e.Header).IsRequired();
 
-                entity.Property(e => e.TemplateEn).IsRequired();
+                entity.Property(e => e.Content).IsRequired();
             });
 
             modelBuilder.Entity<UserNotifications>(entity =>
@@ -110,10 +122,6 @@ namespace Notification.DAL.Data
                 entity.HasIndex(e => e.UserId);
 
                 entity.Property(e => e.DeleteDate).HasColumnType("datetime");
-
-                entity.Property(e => e.IsDelete).HasDefaultValueSql("((0))");
-
-                entity.Property(e => e.IsRead).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.ReadDate).HasColumnType("datetime");
 

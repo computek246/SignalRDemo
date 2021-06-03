@@ -35,7 +35,8 @@ namespace Notification.DAL.Services
         }
 
 
-        public string LoggedInUser => _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+        public string LoggedInUser => _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
         public static DateTime GetDate => DateTime.Now;
 
 
@@ -57,7 +58,6 @@ namespace Notification.DAL.Services
         {
             try
             {
-                _logger.LogInformation("Start Add New Notification");
                 var eventObj = await _notificationContext.Events
                     .Include(x => x.EventRecipient)
                     .Include(x => x.Template)
@@ -65,8 +65,13 @@ namespace Notification.DAL.Services
 
                 if (eventObj?.Template != null)
                 {
-                    var header = eventObj.Template.HeaderEn;
-                    var content = string.Format(eventObj.Template.TemplateEn, user.FullName, url, GetDate.ToString("F"));
+                    var header = eventObj.Template.Header;
+                    var content = string.Format(eventObj.Template.Content, new object?[]
+                    {
+                        //user.FullName,
+                        //url,
+                        //GetDate.ToString("s")
+                    });
 
                     var notification = new Notifications
                     {
@@ -76,16 +81,21 @@ namespace Notification.DAL.Services
                         Url = url,
                         CreationDate = GetDate,
                         CreatorId = user.Id,
-                        UserNotifications = eventObj.EventRecipient.Select(x => new UserNotifications { UserId = x.UserId }).ToList()
+                        UserNotifications = eventObj.EventRecipient
+                            .Select(x => new UserNotifications
+                            {
+                                UserId = x.UserId,
+                                IsRead = false,
+                                IsDelete = false
+                            }).ToList()
                     };
 
                     await _notificationContext.Notifications.AddAsync(notification);
                     await _notificationContext.SaveChangesAsync();
-                    _logger.LogInformation("End Add New Notification");
 
                     foreach (var item in notification.UserNotifications)
                     {
-                        await _hubContext.Clients.User(item.UserId).SendAsync("ReceiveMessage", notification.NotificationContent);
+                        await PushUserNotification(item.UserId);
                     }
 
                 }
@@ -97,25 +107,27 @@ namespace Notification.DAL.Services
 
         }
 
-        public async Task ReadStatus(string notificationId, string userId)
+        public async Task ReadStatus(int notificationId, string userId)
         {
-            var userNotification = _notificationContext.UserNotifications.FirstOrDefault(x => x.UserId == userId && x.Notification.NotificationContent.Contains(notificationId));
+            var userNotification = _notificationContext.UserNotifications
+                .FirstOrDefault(x => x.UserId == userId && x.Notification.Id == notificationId);
             if (userNotification != null)
             {
                 userNotification.IsRead = true;
-                userNotification.ReadDate = DateTime.Now;
+                userNotification.ReadDate = GetDate;
                 await _notificationContext.SaveChangesAsync();
                 await this.PushUserNotification(userId);
             }
         }
 
-        public async Task DeleteStatus(string notificationId, string userId)
+        public async Task DeleteStatus(int notificationId, string userId)
         {
-            var userNotification = _notificationContext.UserNotifications.FirstOrDefault(x => x.UserId == userId && x.Notification.NotificationContent.Contains(notificationId));
+            var userNotification = _notificationContext.UserNotifications
+                .FirstOrDefault(x => x.UserId == userId && x.Notification.Id == notificationId);
             if (userNotification != null)
             {
                 userNotification.IsDelete = true;
-                userNotification.DeleteDate = DateTime.Now;
+                userNotification.DeleteDate = GetDate;
                 await _notificationContext.SaveChangesAsync();
                 await this.PushUserNotification(userId);
             }
@@ -131,12 +143,13 @@ namespace Notification.DAL.Services
             var userNotifications = await _notificationContext.UserNotifications
                             .Include(x => x.Notification)
                             .Where(x => x.UserId == userId)
-                            .OrderByDescending(x => x.Notification.CreationDate)
+                            .OrderByDescending(x => x.IsRead == false)
+                            .ThenByDescending(x => x.Notification.CreationDate)
                             .Select(x => new NotificationObject
                             {
                                 NotificationId = x.NotificationId,
                                 NotificationHeader = x.Notification.NotificationHeader,
-                                NotificationContent = x.Notification.NotificationContent,
+                                NotificationContent = x.Notification.NotificationContent.Replace("##", x.NotificationId.ToString()),
                                 Url = x.Notification.Url,
                                 CreationDate = x.Notification.CreationDate,
                                 IsRead = x.IsRead,
@@ -148,11 +161,39 @@ namespace Notification.DAL.Services
 
             var notificationViewModel = new NotificationViewModel()
             {
+                TotalCount = await _notificationContext.UserNotifications.CountAsync(x => x.UserId == userId),
+                UnreadCount = await _notificationContext.UserNotifications.CountAsync(x => x.UserId == userId && x.IsRead == false),
                 NotificationList = userNotifications,
-                UnreadCount = userNotifications.Where(x => x.IsRead == false).Count()
+                User = await GeUserAsync(userId)
             };
 
             await _hubContext.Clients.User(userId).SendAsync("PushUserNotification", notificationViewModel);
+        }
+
+        public async Task PushUserNotificationCountAsync(string userId)
+        {
+            var totalCount = await _notificationContext.UserNotifications.CountAsync(x => x.UserId == userId);
+            var unreadCount = await _notificationContext.UserNotifications.CountAsync(x => x.UserId == userId && x.IsRead == false);
+
+            var notificationViewModel = new NotificationViewModel
+            {
+                TotalCount = totalCount,
+                UnreadCount = unreadCount
+            };
+
+            await _hubContext.Clients.User(userId).SendAsync("PushUserNotificationCount", notificationViewModel);
+        }
+
+        public async Task<UserViewModel> GeUserAsync(string userId)
+        {
+            return await _notificationContext.Users
+                .Select(x => new UserViewModel
+                {
+                    Id = x.Id,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    ImageUrl = x.ImageUrl
+                }).FirstOrDefaultAsync(x => x.Id == userId);
         }
     }
 }
