@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Notification.DAL.DI;
 using Notification.DAL.Hubs;
+using SignalRDemo.Areas.Identity;
 using SignalRDemo.Data;
 
 namespace SignalRDemo
@@ -23,8 +23,12 @@ namespace SignalRDemo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // -------------  SignalR  ---------------
+
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
+
+
+
+            // -------------  SignalR  ---------------
             services.AddNotification(connectionString);
             services.AddSignalR(e =>
             {
@@ -35,27 +39,17 @@ namespace SignalRDemo
             // -------------  SignalR  ---------------
 
 
-            // --------------  Identity --------------
-            services.AddDbContext<ApplicationDbContext>(options => { options.UseSqlServer(connectionString); });
-            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-                    options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddTokenProvider<DataProtectorTokenProvider<ApplicationUser>>(TokenOptions.DefaultProvider);
-            services.AddScoped<SignInManager<ApplicationUser>, SignInManager<ApplicationUser>>();
 
-            services.Configure<IdentityOptions>(options =>
-            {
-                // Default Password settings.
-                options.Password.RequireDigit = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequiredLength = 6;
-                options.Password.RequiredUniqueChars = 1;
-            });
+
+            // --------------  Identity --------------
+            services.AddIdentityService(connectionString);
+
+            // Add our Config object so it can be injected
+            services.Configure<AuthMessageSenderOptions>(Configuration.GetSection("EmailConfig"));
 
             // --------------  Identity --------------
 
+            services.AddSingleton<IConfiguration>(Configuration);
             services.AddControllersWithViews();
             services.AddRazorPages();
         }
@@ -81,7 +75,7 @@ namespace SignalRDemo
 
             app.UseAuthentication();
             app.UseAuthorization();
-            
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -89,7 +83,13 @@ namespace SignalRDemo
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
 
+
+
+                // -------------  SignalR  ---------------
                 endpoints.MapHub<NotificationHub>("/notify");
+
+                // -------------  SignalR  ---------------
+
             });
         }
     }

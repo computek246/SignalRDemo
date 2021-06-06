@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
 
 namespace SignalRDemo.Data
@@ -8,5 +9,7 @@ namespace SignalRDemo.Data
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string ImageUrl { get; set; }
+        public string UserPassword { get; set; }
+        public DateTime LastModDateTime { get; set; }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Notification.DAL.Services;
 using Notification.DAL.ViewModels;
 using SignalRDemo.Data;
@@ -15,30 +14,22 @@ namespace SignalRDemo.Controllers
     [Authorize]
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly ApplicationDbContext _applicationDbContext;
-        private readonly INotificationService _notificationService;
-        private readonly NotificationServiceOfT<int> notificationServiceOfT;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly NotificationService _notificationService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public HomeController(
-            ILogger<HomeController> logger,
-            ApplicationDbContext applicationDbContext,
-            INotificationService notificationService,
-            NotificationServiceOfT<int> notificationServiceOfT,
-            UserManager<IdentityUser> userManager
+            NotificationService notificationService,
+            UserManager<ApplicationUser> userManager
             )
         {
-            _logger = logger;
-            _applicationDbContext = applicationDbContext;
-            _notificationService = notificationService;
-            this.notificationServiceOfT = notificationServiceOfT;
-            _userManager = userManager;
+            this._notificationService = notificationService;
+            this._userManager = userManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            _notificationService.SendToUser();
+            var userId = _userManager.GetUserId(User);
+            await _notificationService.GetUserNotifications(userId);
             return View();
         }
 
@@ -48,21 +39,21 @@ namespace SignalRDemo.Controllers
         }
 
 
-        //public async Task GetUserNotifications()
-        //{
-        //    var userId = _userManager.GetUserId(User);
-        //    await _notificationService.PushUserNotification(new UserViewModel { Id = userId });
-        //}
+        public async Task GetUserNotifications()
+        {
+            var userId = _userManager.GetUserId(User);
+            await _notificationService.PushUserNotification(new UserViewModel { Id = userId });
+        }
 
-        //public async Task SaveDate(string userId, int eventId, string url)
-        //{
-        //    await _notificationService.SaveNotification(eventId, url, new UserViewModel { Id = userId, FirstName = User.Identity.Name.Split("@").FirstOrDefault(), LastName = "" });
-        //}
+        public async Task SaveDate(string userId, int eventId, string url)
+        {
+            await _notificationService.SaveNotification(eventId, url, new UserViewModel { Id = userId, FirstName = User.Identity.Name.Split("@").FirstOrDefault(), LastName = "" });
+        }
 
-        //public async Task ReadStatus(int notificationId, string userId)
-        //{
-        //    await _notificationService.ReadStatus(notificationId, userId);
-        //}
+        public async Task ReadStatus(int notificationId, string userId)
+        {
+            await _notificationService.ReadStatus(notificationId, userId);
+        }
 
 
 

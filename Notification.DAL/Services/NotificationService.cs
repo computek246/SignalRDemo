@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Arch.EntityFrameworkCore.UnitOfWork;
+using Arch.EntityFrameworkCore.UnitOfWork.Collections;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,6 @@ namespace Notification.DAL.Services
     public class NotificationService : INotificationService
     {
         private readonly ILogger<NotificationService> _logger;
-        private readonly MyContext myContext;
         private readonly NotificationContext _notificationContext;
         private readonly IHubContext<NotificationHub> _hubContext;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -25,7 +25,6 @@ namespace Notification.DAL.Services
 
         public NotificationService(
             ILogger<NotificationService> logger,
-            MyContext myContext,
             NotificationContext notificationContext,
             IHubContext<NotificationHub> hubContext,
             IHttpContextAccessor httpContextAccessor,
@@ -33,7 +32,6 @@ namespace Notification.DAL.Services
             )
         {
             _logger = logger;
-            this.myContext = myContext;
             _notificationContext = notificationContext;
             _hubContext = hubContext;
             _httpContextAccessor = httpContextAccessor;
@@ -41,9 +39,22 @@ namespace Notification.DAL.Services
         }
 
 
-        public string LoggedInUser => _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        public string LoggedInUser
+        {
+            get
+            {
+                return _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            }
+        }
 
-        public static DateTime GetDate => DateTime.Now;
+        public static DateTime GetDate
+        {
+            get
+            {
+                return DateTime.Now;
+            }
+        }
+
 
 
         public async Task SendToAll()
@@ -54,31 +65,45 @@ namespace Notification.DAL.Services
                 .SendAsync("ReceiveMessage", $"<li>User: {userId}, has been refreshed at time: {GetDate:T}</li>");
         }
 
+
         public async Task SendToUser()
         {
-            var data = await myContext.Users.FirstOrDefaultAsync(x => x.Id == 1);
-            
+            var userId = LoggedInUser;
+            await _hubContext.Clients.User("014837d3-e752-4e1a-af9d-fc003c1bd96c")
+                .SendAsync("ReceiveMessage", $"<li>User: {userId}, has been refreshed at time: {GetDate:T}</li>");
         }
 
-        public async Task SendToUser(int pageIndex = 0, int pageSize = 20, string search = "")
-        {
-            var predicate = PredicateBuilder.True<Events>();
-            predicate = predicate.And(x => x.EventName.ToLower().Contains(search));
 
-            var pagedList = await _unitOfWork
-                .GetRepository<Events>()
-                .GetPagedListAsync<object>(
-                    selector: x => new { x.Id, x.EventName },
+        public async Task<IPagedList<NotificationObject>> GetUserNotifications(string userId, int pageIndex = 0, int pageSize = 20, string search = "")
+        {
+            var predicate = PredicateBuilder.True<UserNotifications>();
+            predicate = predicate.And(x => x.UserId == userId).And(x => x.Notification.NotificationHeader.ToLower().Contains(search) || x.Notification.NotificationContent.ToLower().Contains(search) || string.IsNullOrEmpty(search));
+
+            System.Linq.Expressions.Expression<Func<UserNotifications, NotificationObject>> selector = x => new NotificationObject
+            {
+                NotificationId = x.NotificationId,
+                NotificationHeader = x.Notification.NotificationHeader,
+                NotificationContent = x.Notification.NotificationContent.Replace("##", x.NotificationId.ToString()),
+                Url = x.Notification.Url,
+                CreationDate = x.Notification.CreationDate,
+                IsRead = x.IsRead,
+                ReadDate = x.ReadDate,
+                IsDelete = x.IsDelete,
+                DeleteDate = x.DeleteDate
+            };
+
+            IPagedList<NotificationObject> pagedList = await _unitOfWork
+                .GetRepository<UserNotifications>()
+                .GetPagedListAsync(
+                    selector: selector,
                     predicate: predicate,
-                    orderBy: x => x.OrderByDescending(e => e.Id),
-                    include: x => x.Include(e => e.Template).Include(e => e.EventRecipient),
+                    orderBy: x => x.OrderByDescending(x => x.IsRead == false).ThenByDescending(x => x.Notification.CreationDate),
+                    include: x => x.Include(e => e.Notification),
                     pageIndex: pageIndex,
                     pageSize: pageSize
                 );
 
-            var userId = LoggedInUser;
-            await _hubContext.Clients.User("014837d3-e752-4e1a-af9d-fc003c1bd96c")
-                .SendAsync("ReceiveMessage", $"<li>User: {userId}, has been refreshed at time: {GetDate:T}</li>");
+            return pagedList;
         }
 
         public async Task SaveNotification(int eventId, string url, UserViewModel user)
@@ -93,7 +118,7 @@ namespace Notification.DAL.Services
                 if (eventObj?.Template != null)
                 {
                     var header = eventObj.Template.Header;
-                    var content = string.Format(eventObj.Template.Content, new object?[]
+                    var content = string.Format(eventObj.Template.Content, new object[]
                     {
                         user.FullName,
                         url,

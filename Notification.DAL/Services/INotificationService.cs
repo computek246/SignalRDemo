@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Arch.EntityFrameworkCore.UnitOfWork.Collections;
 using Notification.DAL.ViewModels;
 
 namespace Notification.DAL.Services
@@ -10,7 +11,7 @@ namespace Notification.DAL.Services
     {
         Task SendToAll();
         Task SendToUser();
-        Task SendToUser(int pageIndex = 0, int pageSize = 20, string search = "");
+        Task<IPagedList<NotificationObject>> GetUserNotifications(string userId, int pageIndex = 0, int pageSize = 20, string search = "");
         Task SaveNotification(int eventId, string url, UserViewModel user);
         Task ReadStatus(int notificationId, TKey userId);
         Task DeleteStatus(int notificationId, TKey userId);

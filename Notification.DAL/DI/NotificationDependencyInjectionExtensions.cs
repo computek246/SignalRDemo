@@ -16,8 +16,8 @@ namespace Notification.DAL.DI
             services.AddDbContext<NotificationContext>(opt => opt.UseSqlServer(connectionString))
                     .AddUnitOfWork<NotificationContext>();
 
-            services.AddTransient<INotificationService, NotificationService>();
-            services.AddTransient<INotificationService<int>, NotificationServiceOfT<int>>();
+            services.AddTransient<NotificationService>();
+
 
             return services;
         }

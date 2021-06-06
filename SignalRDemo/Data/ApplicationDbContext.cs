@@ -20,6 +20,11 @@ namespace SignalRDemo.Data
             builder.Entity<ApplicationUser>(entity =>
             {
                 entity.ToTable("Users", "security");
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.LastModDateTime)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
             });
 
         }
