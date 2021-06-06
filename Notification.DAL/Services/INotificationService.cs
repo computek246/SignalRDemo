@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Notification.DAL.Models;
 using Notification.DAL.ViewModels;
 
 namespace Notification.DAL.Services
@@ -8,8 +7,8 @@ namespace Notification.DAL.Services
     {
         Task SendToAll();
         Task SendToUser();
-        Task SaveNotification(int eventId, string url, UserViewModel user);
-        Task PushUserNotification(UserViewModel userViewModel);
-        Task ReadStatus(int notificationId, string userId);
+        //Task SaveNotification(int eventId, string url, UserViewModel user);
+        //Task PushUserNotification(UserViewModel userViewModel);
+        //Task ReadStatus(int notificationId, string userId);
     }
 }
