@@ -110,6 +110,7 @@ namespace Notification.DAL.Services
         {
             try
             {
+                var userObj = await _notificationContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
                 var eventObj = await _notificationContext.Events
                     .Include(x => x.EventRecipient)
                     .Include(x => x.Template)
@@ -122,7 +123,8 @@ namespace Notification.DAL.Services
                     {
                         user.FullName,
                         url,
-                        GetDate.ToString("s")
+                        GetDate.ToString("s"),
+                        userObj.ImageUrl
                     });
 
                     var notification = new Notifications

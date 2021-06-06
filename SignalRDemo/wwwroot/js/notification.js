@@ -13,13 +13,13 @@ connection.on("ReceiveMessage", function (data) {
 
 connection.on("PushUserNotification", function (data) {
 
-  alert("you have (" + data.unreadCount + ") Unreaded Message");
+  $("#UnreadedMessage").text("you have (" + data.unreadCount + ") Unreaded Message");
   $(".messageList").html("");
   $.each(data.notificationList,
     function (i, obj) {
 
       $(".messageList").append(obj.notificationContent);
-
+      $(".messageList").append("<hr/>");
 
     });
 
