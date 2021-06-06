@@ -18,23 +18,27 @@ namespace SignalRDemo.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _applicationDbContext;
         private readonly INotificationService _notificationService;
+        private readonly NotificationServiceOfT<int> notificationServiceOfT;
         private readonly UserManager<IdentityUser> _userManager;
 
         public HomeController(
             ILogger<HomeController> logger,
             ApplicationDbContext applicationDbContext,
             INotificationService notificationService,
+            NotificationServiceOfT<int> notificationServiceOfT,
             UserManager<IdentityUser> userManager
             )
         {
             _logger = logger;
             _applicationDbContext = applicationDbContext;
             _notificationService = notificationService;
+            this.notificationServiceOfT = notificationServiceOfT;
             _userManager = userManager;
         }
 
         public IActionResult Index()
         {
+            _notificationService.SendToUser();
             return View();
         }
 

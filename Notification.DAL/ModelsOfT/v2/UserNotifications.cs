@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Notification.DAL.ModelsOfT
+namespace Notification.DAL.ModelsOfT.v2
 {
     public class UserNotifications : UserNotifications<string>
     {

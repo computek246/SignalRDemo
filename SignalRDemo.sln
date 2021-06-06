@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalRDemo", "SignalRDemo\SignalRDemo.csproj", "{C0AA355B-8304-4B30-B6B3-9B29ECBB519A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SignalRDemo", "SignalRDemo\SignalRDemo.csproj", "{C0AA355B-8304-4B30-B6B3-9B29ECBB519A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notification.DAL", "Notification.DAL\Notification.DAL.csproj", "{D33B4405-3C54-47C3-80A1-5ACC00A59102}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notification.DAL", "Notification.DAL\Notification.DAL.csproj", "{D33B4405-3C54-47C3-80A1-5ACC00A59102}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitOfWork", "UnitOfWork\UnitOfWork.csproj", "{ECA2AF1D-F071-4531-BC29-DC25475360EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{D33B4405-3C54-47C3-80A1-5ACC00A59102}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D33B4405-3C54-47C3-80A1-5ACC00A59102}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D33B4405-3C54-47C3-80A1-5ACC00A59102}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECA2AF1D-F071-4531-BC29-DC25475360EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECA2AF1D-F071-4531-BC29-DC25475360EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECA2AF1D-F071-4531-BC29-DC25475360EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECA2AF1D-F071-4531-BC29-DC25475360EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

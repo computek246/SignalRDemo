@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Notification.DAL.ModelsOfT
+namespace Notification.DAL.ModelsOfT.v1
 {
     public class EventRecipient : EventRecipient<string>
     {

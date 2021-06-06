@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Notification.DAL.ModelsOfT
+namespace Notification.DAL.ModelsOfT.v2
 {
 
     public class Notifications : Notifications<string>

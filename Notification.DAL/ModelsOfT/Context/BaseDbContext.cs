@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
+using Notification.DAL.ModelsOfT.v1;
 
 namespace Notification.DAL.ModelsOfT.Context
 {
