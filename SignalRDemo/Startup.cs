@@ -49,7 +49,7 @@ namespace SignalRDemo
 
             // --------------  Identity --------------
 
-            services.AddSingleton<IConfiguration>(Configuration);
+            
             services.AddControllersWithViews();
             services.AddRazorPages();
         }

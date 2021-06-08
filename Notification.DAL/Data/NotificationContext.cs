@@ -10,6 +10,9 @@ namespace Notification.DAL.Data
 {
     public partial class NotificationContext : DbContext
     {
+        internal protected const string schema = "notif";
+
+
         public NotificationContext()
         {
         }
@@ -39,6 +42,19 @@ namespace Notification.DAL.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            //exclude one table from automatic code first migrations in the Entity
+            modelBuilder.Entity<Users>().ToTable(nameof(Users), t => {
+                t.ExcludeFromMigrations();
+            });
+
+            modelBuilder.Entity<Users>(entity =>
+            {
+                entity.ToTable(nameof(Users), "security");
+                entity.Ignore(e => e.FullName);
+                entity.HasKey(e => e.Id);
+            });
+
+
             modelBuilder.Entity<Users>(entity =>
             {
                 entity.ToTable("Users", "security");

@@ -22,13 +22,15 @@ namespace Notification.DAL.Services
         private readonly IHubContext<NotificationHub> _hubContext;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly MyContext _myContext;
 
         public NotificationService(
             ILogger<NotificationService> logger,
             NotificationContext notificationContext,
             IHubContext<NotificationHub> hubContext,
             IHttpContextAccessor httpContextAccessor,
-            IUnitOfWork unitOfWork
+            IUnitOfWork unitOfWork,
+            MyContext myContext
             )
         {
             _logger = logger;
@@ -36,6 +38,7 @@ namespace Notification.DAL.Services
             _hubContext = hubContext;
             _httpContextAccessor = httpContextAccessor;
             _unitOfWork = unitOfWork;
+            this._myContext = myContext;
         }
 
 
@@ -68,6 +71,9 @@ namespace Notification.DAL.Services
 
         public async Task SendToUser()
         {
+            //var events = await _myContext.Events.Include(e => e.EventRecipient).FirstOrDefaultAsync(e=>e.MyProperty == "");
+            //var x = events.EventRecipient.Where(e=>e.my)
+
             var userId = LoggedInUser;
             await _hubContext.Clients.User("014837d3-e752-4e1a-af9d-fc003c1bd96c")
                 .SendAsync("ReceiveMessage", $"<li>User: {userId}, has been refreshed at time: {GetDate:T}</li>");
